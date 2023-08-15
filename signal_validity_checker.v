@@ -13,7 +13,16 @@ module signal_validity_checker (
 
 local parameter [2:0] spare [1:0][2:0][1:0];
 
+// state types
+localparam 
+	IDLE	= 'd0',
+    struct1 = 'd1,		
+    struct2 = 'd2,		
+    struct3 = 'd3;		
+
+
 reg v_signal;
+reg [3:0] state;
 reg [7:0] spares;
 reg [3:0] count1;
 reg [2:0] count2;
@@ -39,10 +48,211 @@ assign signal_valid = v_signal;
 assign unused_spare = spares;
 
 // DSSS와 RLSS가 spec에 맞는 spare signal을 발생하지 않는 경우 signal valid -> false
+// DSSS : 1 X 4bits + 0 X 4bits
+// RLSS : 1 X 2bits + 0 X 2bits
 always @ (posedge clk) begin
-	if((count1 != 4) && (count2 != 2))
+	if((count1 != 4) || (count2 != 2))
 		v_signal <= 0;
 	else
 		v_signal <= 1;
 end
 
+
+// spare structure 1
+
+
+always @ (posedge clk) begin
+	if(rst) begin
+		unused_spare = 8'b1111_1111;
+		uncover_must_pivot = 8'b1111_1111;
+	end
+	else begin
+		case (state) begin
+			IDLSE : begin
+			
+			end;
+			// spare structure 1
+			struct1 : begin
+				integer i;
+				for(i = 0; i < 8; i = i + 1) begin
+					// bank0
+					if(bank_addr[i] == 2'b01) begin	
+						if(must_flag[i] == 3'b100) begin
+							if(unused_spare & 8'b1010_0000)
+								v_signal <= 1;
+							else begin
+								uncover_must_pivot[i] <= 1;
+								v_signal <= 0;
+							end
+						end
+						else if(must_flag[i] == 3'b010) begin
+							if(unused_spare & 8'b0000_1010)
+								v_signal <= 1;
+							else begin
+								uncover_must_pivot[i] <= 1;
+								v_signal <= 0;
+							end
+						end
+						else if(must_flag[i] == 3'b001) begin
+							if(unused_spare & 8'b0101_0000)
+								v_signal <= 1;
+							else begin
+								uncover_must_pivot[i] <= 1;
+								v_signal <= 0;
+							end
+						end
+					end
+					// bank1
+					else begin			
+						if(must_flag[i] == 3'b100) begin
+							if(unused_spare & 8'b0101_0000)
+								v_signal <= 1;
+							else begin
+								uncover_must_pivot[i] <= 1;
+								v_signal <= 0;
+							end
+						end
+						else if(must_flag[i] == 3'b010) begin
+							if(unused_spare & 8'b0000_0101)
+								v_signal <= 1;
+							else begin
+								uncover_must_pivot[i] <= 1;
+								v_signal <= 0;
+							end
+						end
+						else if(must_flag[i] == 3'b001) begin
+							if(unused_spare & 8'b1010_0000)
+								v_signal <= 1;
+							else begin
+								uncover_must_pivot[i] <= 1;
+								v_signal <= 0;
+							end
+						end
+					end
+				end
+			end
+			
+			// spare structure 2
+			struct2 : begin
+				integer i;
+				for(i = 0; i < 8; i = i + 1) begin
+				// bank0
+					if(bank_addr[i] == 2'b01) begin	
+						if(must_flag[i] == 3'b100) begin		// row must
+							if(unused_spare & 8'b1010_0000)
+								v_signal <= 1;
+							else begin
+								uncover_must_pivot[i] <= 1;
+								v_signal <= 0;
+							end
+						end
+						else if(must_flag[i] == 3'b010) begin	// col must
+							if(unused_spare & 8'b0000_1011)
+								v_signal <= 1;
+							else begin
+								uncover_must_pivot[i] <= 1;
+								v_signal <= 0;
+							end
+						end
+						else if(must_flag[i] == 3'b001) begin	// adj row must
+							if(unused_spare & 8'b0101_0000)
+								v_signal <= 1;
+							else begin
+								uncover_must_pivot[i] <= 1;
+								v_signal <= 0;
+							end
+						end
+					end
+					// bank1
+					else begin			
+						if(must_flag[i] == 3'b100) begin		// row must
+							if(unused_spare & 8'b0101_0000)
+								v_signal <= 1;
+							else begin
+								uncover_must_pivot[i] <= 1;
+								v_signal <= 0;
+							end
+						end
+						else if(must_flag[i] == 3'b010) begin	// col must
+							if(unused_spare & 8'b0000_0111)
+								v_signal <= 1;
+							else begin
+								uncover_must_pivot[i] <= 1;
+								v_signal <= 0;
+							end
+						end
+						else if(must_flag[i] == 3'b001) begin	// adj row must
+							if(unused_spare & 8'b1010_0000)
+								v_signal <= 1;
+							else begin
+								uncover_must_pivot[i] <= 1;
+								v_signal <= 0;
+							end
+						end
+					end
+				end			
+			end;
+			
+			// spare structure 3
+			struct3: begin
+				integer i;
+				for(i = 0; i < 8; i = i + 1) begin
+				// bank0
+					if(bank_addr[i] == 2'b01) begin	
+						if(must_flag[i] == 3'b100) begin		// row must
+							if(unused_spare & 8'b1011_0000)
+								v_signal <= 1;
+							else begin
+								uncover_must_pivot[i] <= 1;
+								v_signal <= 0;
+							end
+						end
+						else if(must_flag[i] == 3'b010) begin	// col must
+							if(unused_spare & 8'b0000_1011)
+								v_signal <= 1;
+							else begin
+								uncover_must_pivot[i] <= 1;
+								v_signal <= 0;
+							end
+						end
+						else if(must_flag[i] == 3'b001) begin	// adj row must
+							if(unused_spare & 8'b0111_0000)
+								v_signal <= 1;
+							else begin
+								uncover_must_pivot[i] <= 1;
+								v_signal <= 0;
+							end
+						end
+					end
+					// bank1
+					else begin			
+						if(must_flag[i] == 3'b100) begin		// row must
+							if(unused_spare & 8'b0111_0000)
+								v_signal <= 1;
+							else begin
+								uncover_must_pivot[i] <= 1;
+								v_signal <= 0;
+							end
+						end
+						else if(must_flag[i] == 3'b010) begin	// col must
+							if(unused_spare & 8'b0000_0111)
+								v_signal <= 1;
+							else begin
+								uncover_must_pivot[i] <= 1;
+								v_signal <= 0;
+							end
+						end
+						else if(must_flag[i] == 3'b001) begin	// adj row must
+							if(unused_spare & 8'b1011_0000)
+								v_signal <= 1;
+							else begin
+								uncover_must_pivot[i] <= 1;
+								v_signal <= 0;
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
