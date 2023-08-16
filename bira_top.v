@@ -30,19 +30,31 @@ wire [25:0] pivot_fault_addr [0:PCAM-1];
 wire [16:0] nonpivot_fault_addr [0:NPCAM-1];
 wire [2:0] pointer_addr [0:NPCAM-1]
 
+CAM cam_storage(
+	.clk(clk),
+	.rst(rst),
+	.row_addr(row_add_in),
+	.col_addr(col_add_in),
+	.bank_addr(bank_in),
+	.col_flag(col_flag),
+
+	.pivot_fault_addr(pivot_fault_addr),
+	.nonpivot_fault_addr(nonpivot_fault_addr),
+	.pointer_addr(pointer_addr)
+);
 
 
 signal_validity_checker validity_checker(
 	// input
 	.DSSS(DSSS),
 	.RLSS(RLSS),
-	.p_bnk(),
-	.must_flag(),
+	.p_bnk(pivot_fault_addr[4:3]),
+	.must_flag(pivot_fault_addr[2:0]),
 	
 	// output
-	.unused_spare(),
-	.uncover_must_pivot(),
-	.signal_valid()
+	.unused_spare(unused_spare),
+	.uncover_must_pivot(uncover_must_pivot),
+	.signal_valid(signal_valid)
 );
 
 
