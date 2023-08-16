@@ -56,9 +56,7 @@ localparam
     state1_r0 = 'd2,		// r0 : 2
 	STOP = 'd3;				// STOP : 3
 		
-always @ (posedge clk) 
-
-begin
+always @ (posedge clk) begin
     if((rst) || (early_term)) begin		// if signal 'rst' or 'early_term' is received, resets the Test by set 0 to all param
 		ce_gen <= 0;					
         we_gen <= 0;					
