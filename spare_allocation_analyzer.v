@@ -12,6 +12,12 @@ module spare_allocation_analyzer (
 	output [25:0] uncover_must_addr
 );
 
+wire [9:0] pivot_row[0:PCAM-1];
+wire [9:0] pivot_col[0:PCAM-1];
+
+assign pivot_row = pivot_fault_addr[24:15];
+assign pivot_col = pivot_fault_addr[14:5];
+
 
 
 endmodule
