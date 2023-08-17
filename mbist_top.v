@@ -94,8 +94,8 @@ always @ (posedge clk) begin
 	        check <= 0;									// check = 0
             row_addr_gen <= row_addr_gen + 1; 			// move row address 1 by 1
             data_gen <=  8'b0000_0000;					// set temporal write data = 0
-            if(row_addr_gen == 'd511) begin				// temporal row meet the half of bank
-          	   if(col_addr_gen == 'd504) begin    		// col address meet the half of bank
+            if(row_addr_gen == 'd1023) begin				// temporal row meet the half of bank
+          	   if(col_addr_gen == 'd1016) begin    		// col address meet the half of bank
 				   bank_addr_gen <= 2'b10;				// bank : 1st -> 2nd
                    col_addr_gen <= 0;					// col address = 0
 				   if(bank_addr_gen == 2'b10) begin		// if bank address is already in 2nd
@@ -128,8 +128,8 @@ always @ (posedge clk) begin
 				col_addr_buf <= col_addr_gen;			
 				bank_addr_buf <= bank_addr_gen;
                 row_addr_gen <= row_addr_gen + 1;			// move row address 1 by 1
-                if(row_addr_gen == 'd511) begin				// temporal row meet the half of bank
-          	       if(col_addr_gen == 'd504) begin     		// temporal col address meet the half of bank
+                if(row_addr_gen == 'd1023) begin				// temporal row meet the half of bank
+          	       if(col_addr_gen == 'd1016) begin     		// temporal col address meet the half of bank
 			    	   bank_addr_gen <= 2'b10;				// bank : 1st -> 2nd
 					   col_addr_gen <= 0;					// col address = 0
 			    	   if(bank_addr_gen == 2'b10) begin		// if bank address is already 2nd, reset all variables
