@@ -9,6 +9,8 @@ module RAC (
     output reg compare_result
 );
 
-assign compare_result = (RRx_addr !== NPry_addr) ? 0 :
+//assign compare_result = (RRx_addr !== NPry_addr) ? 0 :
                         (RLSS || (RRx_block == NPry_block)) ? 1 : 0;
+
+assign compare_result = RLSS;
 endmodule
