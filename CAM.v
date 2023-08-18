@@ -3,119 +3,141 @@
 module CAM (
     input clk,
     input rst,
+    input early_term,
     input [9:0] row_addr,
     input [9:0] col_addr,
     input [1:0] bank_addr,
     input [7:0] col_flag,
 
- //   output [1:0] pivot_bnk [0:PCAM-1],
- //   output [2:0] must_repair [0:PCAM-1],
+    output [1:0] pivot_bnk [0:PCAM-1],
+    output [2:0] must_repair [0:PCAM-1],
     output [25:0] pivot_fault_addr [0:PCAM-1],
     output [16:0] nonpivot_fault_addr [0:NPCAM-1],
     output [2:0] pointer_addr [0:NPCAM-1]
 );
 
-reg find;
+parameter PCAM = 8;
+parameter NPCAM = 30;
 
+// Internal signals
+wire [25:0] pivot_fault_addr_wire [0:PCAM-1];
+wire [16:0] nonpivot_fault_addr_wire [0:NPCAM-1];
+
+reg find;                                  // if faults is npcam, set 1
+// pcam
 reg pcam_enable [0:PCAM-1];
 reg [9:0] pcam_row_addr [0:PCAM-1];
 reg [9:0] pcam_col_addr [0:PCAM-1];
 reg [1:0] pcam_bnk_addr [0:PCAM-1];
 reg [2:0] pcam_must_flag [0:PCAM-1];
-
+// npcam
 reg npcam_enable [0:NPCAM-1];
 reg [2:0] npcam_ptr [0:NPCAM-1];
 reg npcam_dscrpt [0:NPCAM-1];
 reg [9:0] npcam_addr [0:NPCAM-1];
 reg [1:0] npcam_bnk_addr [0:NPCAM-1];
+// XX_XX_XX : row, col, adj
+reg [5:0] cnt[0:PCAM-1];                    
 
-reg [5:0] cnt[0:PCAM-1];
 
-assign pivot_bnk = pcam_bnk_addr;
-assign must_repair = pcam_must_flag;
-assign pivot_fault_addr = { pcam_enable, pcam_row_addr, pcam_col_addr,
-                            pcam_bnk_addr, pcam_must_flag };
-assign nonpivot_fault_addr = { npcam_enable, npcam_ptr, npcam_dscrpt,
-                            npcam_addr, npcam_bnk_addr };
+// Combinational logic for pivot_fault_addr
+    genvar i;
+    generate
+        for (i = 0; i < PCAM; i = i + 1) begin : assign_pivot_fault
+            assign pivot_fault_addr_wire[i] = { pcam_enable[i], pcam_row_addr[i], pcam_col_addr[i],
+                                                pcam_bnk_addr[i], pcam_must_flag[i] };
+        end
+    endgenerate
 
-integer p_idx;
-integer np_idx;
+    // Combinational logic for nonpivot_fault_addr
+    genvar j;
+    generate
+        for (j = 0; j < NPCAM; j = j + 1) begin : assign_nonpivot_fault
+            assign nonpivot_fault_addr_wire[j] = { npcam_enable[j], npcam_ptr[j], npcam_dscrpt[j],
+                                                    npcam_addr[j], npcam_bnk_addr[j] };
+        end
+    endgenerate
 
-MUX flag_to_idx(
-	.input_bits(col_flag),
-	.output_idx(flag_idx)
-)
-
-always @ (posedge clk) begin
+always @ (posedge clk) begin : CAM_alloct
+    integer p_idx;
+    integer np_idx;
+    integer idx;
+    find <= 0;                   // reset find
+    // reset value
     if((rst) || (early_term)) begin
         p_idx = 0;
         np_idx = 0;
-        integer i;
-        for (int i = 0; i < PCAM; i = i + 1) begin
-            pcam_enable[i] = 1'b0;
-            pcam_row_addr[i] = 10'b0;
-            pcam_col_addr[i] = 10'b0;
-            pcam_bnk_addr[i] = 2'b0;
-            pcam_must_flag[i] = 3'b0;
-            cnt[i] = 6'b0;
+        for (idx = 0; idx < PCAM; idx = idx + 1) begin
+            pcam_enable[idx] = 1'b0;
+            pcam_row_addr[idx] = 10'b0;
+            pcam_col_addr[idx] = 10'b0;
+            pcam_bnk_addr[idx] = 2'b0;
+            pcam_must_flag[idx] = 3'b0;
+            cnt[idx] = 6'b0;
         end
-         for (int i = 0; i < NPCAM; i = i + 1) begin
-            npcam_enable[i] = 1'b0;
-            npcam_ptr[i] = 3'b0;
-            npcam_dscrpt[i] = 1'b0;
-            npcam_addr[i] = 10'b0;
-            npcam_bnk_addr[i] = 2'b0;
+         for (idx = 0; idx < NPCAM; idx = idx + 1) begin
+            npcam_enable[idx] = 1'b0;
+            npcam_ptr[idx] = 3'b0;
+            npcam_dscrpt[idx] = 1'b0;
+            npcam_addr[idx] = 10'b0;
+            npcam_bnk_addr[idx] = 2'b0;
         end
     end
     else begin
-        integer i;
-        for(i = 0; i < PCAM; i = i+1) begin
-            if(pcam_row_addr[i] == row_addr) begin
-                if((cnt[i] & 6'b11_00_00) == 6'b11_00_00) begin
-                    pcam_must_flag[i] = 3'b100;
-                    disable
+        for(idx = 0; idx < PCAM; idx = idx+1) begin
+            if(pcam_row_addr[idx] == row_addr) begin
+                // faults in row > #spares
+                if((cnt[idx] & 6'b11_00_00) == 6'b11_00_00) begin
+                    pcam_must_flag[idx] = 3'b100;
+                    break;
                 end
-                else if((cnt[i] & 6'b00_00_11) == 6'b00_00_11) begin
-                    pcam_must_flag[i] = 3'b001;
-                    disable
+                // faults in row adjacent block > #spares
+                else if((cnt[idx] & 6'b00_00_11) == 6'b00_00_11) begin
+                    pcam_must_flag[idx] = 3'b001;
+                    break;
                 end
+                // set npcam
                 npcam_enable[np_idx] <= 1;
-                npcam_ptr[np_idx] <= i;
+                npcam_ptr[np_idx] <= idx;
                 npcam_dscrpt[np_idx] <= 0;
                 npcam_addr[np_idx] <= row_addr;
                 npcam_bnk_addr[np_idx] <= bank_addr;
                 find <= 1;
                 np_idx = np_idx + 1;
-                if(bank_addr == pcam_bnk_addr[i])
-                    cnt[i] = cnt[i] + 6'b01_00_00;
-                else
-                    cnt[i] = cnt[i] + 6'b00_00_01;
-                disable
-            end 
-            else if((pcam_col_addr[i] == (col_addr | MUX(col_flag))) && (pcam_bnk_addr[i] == bank_addr)) begin
-                if((cnt[i] & 6'b00_11_00) == 6'b00_11_00) begin
-                    pcam_must_flag[i] = 3'b010;
-                    disable
+                // count faults
+                if(bank_addr == pcam_bnk_addr[idx]) begin
+                    cnt[idx] = cnt[idx] + 6'b01_00_00;
                 end
+                else begin
+                    cnt[idx] = cnt[idx] + 6'b00_00_01;
+                end
+            end 
+            else if((pcam_col_addr[idx] == (col_addr | MUX(col_flag))) && (pcam_bnk_addr[idx] == bank_addr)) begin
+                // faults in col > #spares
+                if((cnt[idx] & 6'b00_11_00) == 6'b00_11_00) begin
+                    pcam_must_flag[idx] = 3'b010;
+                    break;
+                end
+                // set npcam
                 npcam_enable[np_idx] <= 1;
-                npcam_ptr[np_idx] <= i;
+                npcam_ptr[np_idx] <= idx;
                 npcam_dscrpt[np_idx] <= 1;
                 npcam_addr[np_idx] <= col_addr;
                 npcam_bnk_addr[np_idx] <= bank_addr;
                 find <= 1;
                 np_idx = np_idx + 1;
-                cnt[i] = cnt[i] + 6'b00_01_00;
-                disable
+                // count faults
+                cnt[idx] = cnt[idx] + 6'b00_01_00;
             end
         end
         if(!find) begin
-            pcam_enable[p_dix] <= 1;
+            // set pcam
+            pcam_enable[p_idx] <= 1;
             pcam_row_addr[p_idx] <= row_addr;
             pcam_col_addr[p_idx] <= (col_addr | MUX(col_flag));
             pcam_bnk_addr[p_idx] <= bank_addr;
             p_idx = p_idx + 1;
         end
-        find = 0;
     end
 end
 
