@@ -16,18 +16,18 @@ wire [9:0] RRx_addr [0:3];
 wire [1:0] RRx_block[0:3];
 wire comp_result [0:3];
 
-assign NPry_addr = NPr[11:2];
-assign NPry_block = NPr[1:0];
+assign NPry_addr = NPr[9:0];
+assign NPry_block = NPr[11:10];
 
-assign RRx_addr[0] = RRx1[11:2];
-assign RRx_addr[1] = RRx2[11:2];
-assign RRx_addr[2] = RRx3[11:2];
-assign RRx_addr[3] = RRx4[11:2];
+assign RRx_addr[0] = RRx1[9:0];
+assign RRx_addr[1] = RRx2[9:0];
+assign RRx_addr[2] = RRx3[9:0];
+assign RRx_addr[3] = RRx4[9:0];
 
-assign RRx_block[0] = RRx1[1:0];
-assign RRx_block[1] = RRx2[1:0];
-assign RRx_block[2] = RRx3[1:0];
-assign RRx_block[3] = RRx4[1:0];
+assign RRx_block[0] = RRx1[11:10];
+assign RRx_block[1] = RRx2[11:10];
+assign RRx_block[2] = RRx3[11:10];
+assign RRx_block[3] = RRx4[11:10];
 
 assign comp = (comp_result[0] | comp_result[1] | comp_result[2] | comp_result[3]);
 

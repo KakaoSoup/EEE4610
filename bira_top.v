@@ -28,7 +28,7 @@ wire signal_valid;
 
 wire [25:0] pivot_fault_addr [0:PCAM-1];
 wire [16:0] nonpivot_fault_addr [0:NPCAM-1];
-wire [2:0] pointer_addr [0:NPCAM-1]
+wire [2:0] pointer_addr [0:NPCAM-1];
 
 CAM cam_storage(
 	.clk(clk),

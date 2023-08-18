@@ -1,21 +1,18 @@
 `timescale 1ns / 1ps
 
 module signal_validity_checker (
-	input [7:0] DSSS;				// 8bits DSSS signal
-	input [3:0] RLSS;				// 4bits RLSS signal
-	input [1:0] p_bnk [0:7];		// 2bits bank_addr X 8
-	input [2:0] must_flag [0:7];	// 3bits must flag X 8
+	input [7:0] DSSS,				// 8bits DSSS signal
+	input [3:0] RLSS,				// 4bits RLSS signal
+	input [1:0] p_bnk [0:7],		// 2bits bank_addr X 8
+	input [2:0] must_flag [0:7],	// 3bits must flag X 8
 	
-	output [7:0] unused_spare;
-	output reg uncover_must_pivot [7:0];
-	output signal_valid;
+	output [7:0] unused_spare,
+	output  uncover_must_pivot [7:0],
+	output signal_valid
 );
-
-local parameter [2:0] spare [1:0][2:0][1:0];
 
 // state types
 localparam 
-	IDLE	= 'd0',
     struct1 = 'd1,		
     struct2 = 'd2,		
     struct3 = 'd3;		
@@ -47,7 +44,7 @@ assign count2 = partial_counts2[0] + partial_counts2[1];
 assign signal_valid = v_signal;
 assign unused_spare = spares;
 
-// DSSS와 RLSS가 spec에 맞는 spare signal을 발생하지 않는 경우 signal valid -> false
+// DSSS?? RLSS�? spec?�� 맞는 spare signal?�� 발생?���? ?��?�� 경우 signal valid -> false
 // DSSS : 1 X 4bits + 0 X 4bits
 // RLSS : 1 X 2bits + 0 X 2bits
 always @ (posedge clk) begin
@@ -57,46 +54,39 @@ always @ (posedge clk) begin
 		v_signal <= 1;
 end
 
-
-// spare structure 1
-
-
-always @ (posedge clk) begin
+always @ (posedge clk) begin : signal_validity_check
+	integer i;
 	if(rst) begin
 		unused_spare = 8'b1111_1111;
 		uncover_must_pivot = 8'b1111_1111;
 	end
 	else begin
-		case (state) begin
-			IDLSE : begin
-			
-			end;
+		case (state)
 			// spare structure 1
 			struct1 : begin
-				integer i;
 				for(i = 0; i < 8; i = i + 1) begin
 					// bank0
 					if(bank_addr[i] == 2'b01) begin	
 						if(must_flag[i] == 3'b100) begin
-							if(unused_spare & 8'b1010_0000)
+							if(unused_spare & 8'b1010_0000) begin
 								v_signal <= 1;
-							else begin
+							end else begin
 								uncover_must_pivot[i] <= 1;
 								v_signal <= 0;
 							end
 						end
 						else if(must_flag[i] == 3'b010) begin
-							if(unused_spare & 8'b0000_1010)
+							if(unused_spare & 8'b0000_1010) begin
 								v_signal <= 1;
-							else begin
+							end else begin
 								uncover_must_pivot[i] <= 1;
 								v_signal <= 0;
 							end
 						end
 						else if(must_flag[i] == 3'b001) begin
-							if(unused_spare & 8'b0101_0000)
+							if(unused_spare & 8'b0101_0000) begin
 								v_signal <= 1;
-							else begin
+							end else begin
 								uncover_must_pivot[i] <= 1;
 								v_signal <= 0;
 							end
@@ -105,25 +95,25 @@ always @ (posedge clk) begin
 					// bank1
 					else begin			
 						if(must_flag[i] == 3'b100) begin
-							if(unused_spare & 8'b0101_0000)
+							if(unused_spare & 8'b0101_0000) begin
 								v_signal <= 1;
-							else begin
+							end else begin
 								uncover_must_pivot[i] <= 1;
 								v_signal <= 0;
 							end
 						end
 						else if(must_flag[i] == 3'b010) begin
-							if(unused_spare & 8'b0000_0101)
+							if(unused_spare & 8'b0000_0101) begin
 								v_signal <= 1;
-							else begin
+							end else begin
 								uncover_must_pivot[i] <= 1;
 								v_signal <= 0;
 							end
 						end
 						else if(must_flag[i] == 3'b001) begin
-							if(unused_spare & 8'b1010_0000)
+							if(unused_spare & 8'b1010_0000) begin
 								v_signal <= 1;
-							else begin
+							end else begin
 								uncover_must_pivot[i] <= 1;
 								v_signal <= 0;
 							end
@@ -139,25 +129,25 @@ always @ (posedge clk) begin
 				// bank0
 					if(bank_addr[i] == 2'b01) begin	
 						if(must_flag[i] == 3'b100) begin		// row must
-							if(unused_spare & 8'b1010_0000)
+							if(unused_spare & 8'b1010_0000) begin
 								v_signal <= 1;
-							else begin
+							end else begin
 								uncover_must_pivot[i] <= 1;
 								v_signal <= 0;
 							end
 						end
 						else if(must_flag[i] == 3'b010) begin	// col must
-							if(unused_spare & 8'b0000_1011)
+							if(unused_spare & 8'b0000_1011) begin
 								v_signal <= 1;
-							else begin
+							end else begin
 								uncover_must_pivot[i] <= 1;
 								v_signal <= 0;
 							end
 						end
 						else if(must_flag[i] == 3'b001) begin	// adj row must
-							if(unused_spare & 8'b0101_0000)
+							if(unused_spare & 8'b0101_0000) begin
 								v_signal <= 1;
-							else begin
+							end else begin
 								uncover_must_pivot[i] <= 1;
 								v_signal <= 0;
 							end
@@ -166,32 +156,32 @@ always @ (posedge clk) begin
 					// bank1
 					else begin			
 						if(must_flag[i] == 3'b100) begin		// row must
-							if(unused_spare & 8'b0101_0000)
+							if(unused_spare & 8'b0101_0000) begin
 								v_signal <= 1;
-							else begin
+							end else begin
 								uncover_must_pivot[i] <= 1;
 								v_signal <= 0;
 							end
 						end
 						else if(must_flag[i] == 3'b010) begin	// col must
-							if(unused_spare & 8'b0000_0111)
+							if(unused_spare & 8'b0000_0111) begin
 								v_signal <= 1;
-							else begin
+							end else begin
 								uncover_must_pivot[i] <= 1;
 								v_signal <= 0;
 							end
 						end
 						else if(must_flag[i] == 3'b001) begin	// adj row must
-							if(unused_spare & 8'b1010_0000)
+							if(unused_spare & 8'b1010_0000) begin
 								v_signal <= 1;
-							else begin
+							end else begin
 								uncover_must_pivot[i] <= 1;
 								v_signal <= 0;
 							end
 						end
 					end
 				end			
-			end;
+			end
 			
 			// spare structure 3
 			struct3: begin
@@ -200,25 +190,25 @@ always @ (posedge clk) begin
 				// bank0
 					if(bank_addr[i] == 2'b01) begin	
 						if(must_flag[i] == 3'b100) begin		// row must
-							if(unused_spare & 8'b1011_0000)
+							if(unused_spare & 8'b1011_0000) begin
 								v_signal <= 1;
-							else begin
+							end else begin
 								uncover_must_pivot[i] <= 1;
 								v_signal <= 0;
 							end
 						end
 						else if(must_flag[i] == 3'b010) begin	// col must
-							if(unused_spare & 8'b0000_1011)
+							if(unused_spare & 8'b0000_1011) begin
 								v_signal <= 1;
-							else begin
+							end else begin
 								uncover_must_pivot[i] <= 1;
 								v_signal <= 0;
 							end
 						end
 						else if(must_flag[i] == 3'b001) begin	// adj row must
-							if(unused_spare & 8'b0111_0000)
+							if(unused_spare & 8'b0111_0000) begin
 								v_signal <= 1;
-							else begin
+							end else begin
 								uncover_must_pivot[i] <= 1;
 								v_signal <= 0;
 							end
@@ -227,25 +217,26 @@ always @ (posedge clk) begin
 					// bank1
 					else begin			
 						if(must_flag[i] == 3'b100) begin		// row must
-							if(unused_spare & 8'b0111_0000)
+							if(unused_spare & 8'b0111_0000) begin
 								v_signal <= 1;
-							else begin
+							end else begin
 								uncover_must_pivot[i] <= 1;
 								v_signal <= 0;
 							end
 						end
 						else if(must_flag[i] == 3'b010) begin	// col must
-							if(unused_spare & 8'b0000_0111)
+							if(unused_spare & 8'b0000_0111) begin
 								v_signal <= 1;
+						    end
 							else begin
 								uncover_must_pivot[i] <= 1;
 								v_signal <= 0;
 							end
 						end
 						else if(must_flag[i] == 3'b001) begin	// adj row must
-							if(unused_spare & 8'b1011_0000)
+							if(unused_spare & 8'b1011_0000) begin
 								v_signal <= 1;
-							else begin
+							end else begin
 								uncover_must_pivot[i] <= 1;
 								v_signal <= 0;
 							end
@@ -253,6 +244,8 @@ always @ (posedge clk) begin
 					end
 				end
 			end
-		end
+		endcase
 	end
 end
+
+endmodule

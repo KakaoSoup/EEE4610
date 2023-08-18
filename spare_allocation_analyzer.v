@@ -21,6 +21,20 @@ assign pivot_row = pivot_fault_addr[24:15];
 assign pivot_col = pivot_fault_addr[14:5];
 assign nonpivot_cover_result = nonpivot_cover_result1 | nonpivot_cover_result2;
 
+RC_MUX RRx(
+	.clk(clk),
+	.PCAM_addr(pivot_fault_addr[24:15]),
+	.dsss(dsss),
+	.repair_addr(RRx)
+);
+
+RC_MUX RCx(
+	.clk(clk),
+	.PCAM_addr(pivot_fault_addr[14:5]),
+	.dsss(dsss),
+	.repair_addr(RCx)
+);
+
 NP_comp row_comp_block1 (
 	.NPr(nonpivot_fault_addr[0]),
 	.RRx1(RRx[0]),
