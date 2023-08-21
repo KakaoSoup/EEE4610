@@ -34,7 +34,7 @@ localparam S1 = 2'b01;
 localparam S2 = 2'b10;
 localparam S3 = 2'b11;
 reg [2:0] i, j, k, p;
-reg [1:0] ri, rj;
+reg [1:0] ri;
 reg rlss_term;
 
 always @ (posedge clk) begin
@@ -48,7 +48,6 @@ always @ (posedge clk) begin
         k <= 3'd5;
         p <= 3'd4;
         ri <= 2'd3;
-        rj <= 2'd2;
     end
     else begin
         DSSS <= 8'b0;
@@ -86,15 +85,11 @@ always @ (posedge clk) begin
                     DSSS[k] <= 1;
                     DSSS[p] <= 1;
                     RLSS[ri] <= 1;
-                    RLSS[rj] <= 1;
-                    if (rj > 0) begin
-                        rj <= rj - 1;
-                    end else if (ri > 1) begin
+                    RLSS[0] <= 0; // RLSS's LSB is always 0
+                    if (ri > 1) begin
                         ri <= ri - 1;
-                        rj <= ri - 2;
                     end else begin
                         ri <= 2'd3;
-                        rj <= 2'd2;
                         if (p > 0) begin
                             p <= p - 1;
                         end else if (k > 1) begin
