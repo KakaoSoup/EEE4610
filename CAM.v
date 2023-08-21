@@ -11,17 +11,13 @@ module CAM (
 
     output [1:0] pivot_bnk [0:PCAM-1],
     output [2:0] must_repair [0:PCAM-1],
-    output [25:0] pivot_fault_addr [0:PCAM-1],
-    output [16:0] nonpivot_fault_addr [0:NPCAM-1],
+    output wire [PCAM-1:0][25:0] pivot_fault_addr,
+    output wire [NPCAM-1:0][16:0] nonpivot_fault_addr,
     output [2:0] pointer_addr [0:NPCAM-1]
 );
 
 parameter PCAM = 8;
 parameter NPCAM = 30;
-
-// Internal signals
-wire [25:0] pivot_fault_addr_wire [0:PCAM-1];
-wire [16:0] nonpivot_fault_addr_wire [0:NPCAM-1];
 
 reg find;                                  // if faults is npcam, set 1
 // pcam
@@ -40,23 +36,24 @@ reg [1:0] npcam_bnk_addr [0:NPCAM-1];
 reg [5:0] cnt[0:PCAM-1];                    
 
 
-// Combinational logic for pivot_fault_addr
-    genvar i;
-    generate
-        for (i = 0; i < PCAM; i = i + 1) begin : assign_pivot_fault
-            assign pivot_fault_addr_wire[i] = { pcam_enable[i], pcam_row_addr[i], pcam_col_addr[i],
-                                                pcam_bnk_addr[i], pcam_must_flag[i] };
-        end
-    endgenerate
 
-    // Combinational logic for nonpivot_fault_addr
-    genvar j;
-    generate
-        for (j = 0; j < NPCAM; j = j + 1) begin : assign_nonpivot_fault
-            assign nonpivot_fault_addr_wire[j] = { npcam_enable[j], npcam_ptr[j], npcam_dscrpt[j],
-                                                    npcam_addr[j], npcam_bnk_addr[j] };
-        end
-    endgenerate
+// Combinational logic for pivot_fault_addr
+genvar i;
+generate
+    for (i = 0; i < PCAM; i = i + 1) begin : assign_pivot_fault
+        assign pivot_fault_addr[i] = { pcam_enable[i], pcam_row_addr[i], pcam_col_addr[i],
+                                       pcam_bnk_addr[i], pcam_must_flag[i] };
+    end
+endgenerate
+
+// Combinational logic for nonpivot_fault_addr
+genvar j;
+generate
+    for (j = 0; j < NPCAM; j = j + 1) begin : assign_nonpivot_fault
+        assign nonpivot_fault_addr[j] = { npcam_enable[j], npcam_ptr[j], npcam_dscrpt[j],
+                                          npcam_addr[j], npcam_bnk_addr[j] };
+    end
+endgenerate
 
 always @ (posedge clk) begin : CAM_alloct
     integer p_idx;
