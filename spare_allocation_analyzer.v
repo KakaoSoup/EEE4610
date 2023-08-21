@@ -1,8 +1,28 @@
 `timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 2023/08/21 16:26:24
+// Design Name: 
+// Module Name: spare_allocation_analyzer
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+`timescale 1ns / 1ps
 
 module spare_allocation_analyzer (
-	input [25:0] pivot_fault_addr [0:PCAM-1],
-	input [16:0] nonpivot_fault_addr [0:NPCAM-1],
+	input [PCAM-1:0][25:0] pivot_fault_addr,
+	input [NPCAM-1:0][16:0] nonpivot_fault_addr,
 	input [PCAM-1:0] dsss,
 	input [3:0] rlss,
 
@@ -12,27 +32,51 @@ module spare_allocation_analyzer (
 	output [25:0] uncover_must_addr
 );
 
-wire [11:0] RRx [0:3];
-wire [11:0] RCx [0:3];
-wire [9:0] pivot_row[0:PCAM-1];
-wire [9:0] pivot_col[0:PCAM-1];
+parameter PCAM = 8;
+parameter NPCAM = 30;
+
+wire [9:0] RRx [0:3];
+wire [9:0] RCx [0:3];
+wire [PCAM-1:0][9:0] pivot_row;
+wire [PCAM-1:0][9:0] pivot_col;
+wire [NPCAM-1:0] nonpivot_cover_result1;
+wire [NPCAM-1:0] nonpivot_cover_result2;
+
+assign nonpivot_cover_result = (nonpivot_cover_result1 | nonpivot_cover_result2);
+
+
+/*
+// Combinational logic for pivot_fault_addr
+genvar i;
+generate
+    for (i = 0; i < PCAM; i = i + 1) begin : assign_pivot_fault
+        assign pivot_row[i] = pivot_fault_addr[i][24:15];
+        assign pivot_col[i] = pivot_fault_addr[i][14:5];
+    end
+endgenerate
+*/
 
 assign pivot_row = pivot_fault_addr[24:15];
-assign pivot_col = pivot_fault_addr[14:5];
-assign nonpivot_cover_result = nonpivot_cover_result1 | nonpivot_cover_result2;
+assign pivot_row = pivot_fault_addr[14:5];
 
-RC_MUX RRx(
+RC_MUX RRx_MUX(
 	.clk(clk),
-	.PCAM_addr(pivot_fault_addr[24:15]),
+	.PCAM_addr(pivot_row),
 	.dsss(dsss),
-	.repair_addr(RRx)
+	.repair_addr1(RRx[0]),
+	.repair_addr2(RRx[1]),
+	.repair_addr3(RRx[2]),
+	.repair_addr4(RRx[3])
 );
 
-RC_MUX RCx(
+RC_MUX RCx_MUX(
 	.clk(clk),
-	.PCAM_addr(pivot_fault_addr[14:5]),
+	.PCAM_addr(pivot_col),
 	.dsss(dsss),
-	.repair_addr(RCx)
+	.repair_addr1(RCx[0]),
+	.repair_addr2(RCx[1]),
+	.repair_addr3(RCx[2]),
+	.repair_addr4(RCx[3])
 );
 
 NP_comp row_comp_block1 (

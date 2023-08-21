@@ -1,4 +1,24 @@
 `timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: Yonsei University
+// Engineer: Kyeongseok Oh
+// 
+// Create Date: 2023/08/21 15:30:21
+// Design Name: 1.0.0
+// Module Name: bira_top
+// Project Name: BIRA
+// Target Devices: Memory
+// Tool Versions: Verilog
+// Description: Top module of BIRA
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+`timescale 1ns / 1ps
 
 module bira_top(
     input clk,						// 100MHz clk signal from top module
@@ -23,26 +43,40 @@ parameter NPCAM = 30;
 wire [7:0] DSSS;
 wire [3:0] RLSS;
 wire [7:0] unused_spare;
-wire uncover_must_pivot[0:PCAM-1];
+wire [PCAM-1:0] uncover_must_pivot;
 wire signal_valid;
+wire [16:0] uncover_nonpivot_addr;
+wire [25:0] cover_pivot_addr;
+wire [NPCAM-1:0] nonpivot_cover_result;
+wire [25:0] uncover_must_addr;
 
-wire [25:0] pivot_fault_addr [0:PCAM-1];
-wire [16:0] nonpivot_fault_addr [0:NPCAM-1];
-wire [2:0] pointer_addr [0:NPCAM-1];
+wire [PCAM-1:0][25:0] pivot_fault_addr;
+wire [NPCAM-1:0][16:0] nonpivot_fault_addr;
+wire [2:0] pointer_addr;
 
 CAM cam_storage(
+    // input
 	.clk(clk),
 	.rst(rst),
 	.row_addr(row_add_in),
 	.col_addr(col_add_in),
 	.bank_addr(bank_in),
 	.col_flag(col_flag),
-
+    // output
 	.pivot_fault_addr(pivot_fault_addr),
 	.nonpivot_fault_addr(nonpivot_fault_addr),
 	.pointer_addr(pointer_addr)
 );
 
+signal_generator generator(
+    // input
+    .rst(rst),
+    .clk(clk),
+    // output
+    .spare_struct_type(spare_struct),
+    .DSSS(DSSS),
+    .RLSS(RLSS)
+);
 
 signal_validity_checker validity_checker(
 	// input
@@ -50,21 +84,26 @@ signal_validity_checker validity_checker(
 	.RLSS(RLSS),
 	.p_bnk(pivot_fault_addr[4:3]),
 	.must_flag(pivot_fault_addr[2:0]),
-	
 	// output
 	.unused_spare(unused_spare),
 	.uncover_must_pivot(uncover_must_pivot),
 	.signal_valid(signal_valid)
 );
 
-
-
-
-
-
-
-
+spare_allocation_analyzer spare_allcot (
+    // input
+    .pivot_fault_addr(pivot_fault_addr),
+	.nonpivot_fault_addr(nonpivot_fault_addr),
+	.dsss(DSSS),
+	.rlss(RLSS),
+    // output
+	.uncover_nonpivot_addr(uncover_nonpivot_addr),
+	.cover_pivot_addr(cover_pivot_addr),
+	.nonpivot_cover_result(nonpivot_cover_result),
+	.uncover_must_addr(uncover_must_addr)
+);
 
 
 //////////////////////////////////////////////////////////
 endmodule
+

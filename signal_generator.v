@@ -26,8 +26,7 @@ module signal_generator (
     input clk,
     input [1:0] spare_struct_type,
     output reg [7:0] DSSS,
-    output reg [3:0] RLSS,
-    output reg gen_sig
+    output reg [3:0] RLSS
 );
 
 localparam S1 = 2'b01;
@@ -36,6 +35,7 @@ localparam S3 = 2'b11;
 reg [2:0] i, j, k, p;
 reg [1:0] ri, rj;
 reg rlss_term;
+reg gen_sig;
 
 always @ (posedge clk) begin
     if(rst) begin
@@ -75,7 +75,7 @@ always @ (posedge clk) begin
                         k <= i - 3; 
                         p <= i - 4;
                     end else begin
-                        gen_sig <= 0; // ë£¨í”„ ì¢…ë£Œ
+                        gen_sig <= 0; // ·çÇÁ Á¾·á
                     end                
                 end
             end
@@ -110,7 +110,7 @@ always @ (posedge clk) begin
                             k <= i - 3; 
                             p <= i - 4;
                         end else begin
-                            gen_sig <= 0; // ë£¨í”„ ì¢…ë£Œ
+                            gen_sig <= 0; // ·çÇÁ Á¾·á
                         end
                     end
                 end
