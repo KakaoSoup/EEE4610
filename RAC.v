@@ -4,8 +4,8 @@ module RAC (
     input clk,
     input [9:0] RRx_addr,
     input [9:0] NPry_addr,
-    input [1:0] RRx_block,
-    input [1:0] NPry_block,
+    input RRx_block,
+    input NPry_block,
     input RLSS,
     output reg compare_result
 );
