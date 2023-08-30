@@ -18,7 +18,7 @@ RedundantAnalyzer redundant_analyzer;
 
 // Signal Generator variables
 bool DSSS[R_SPARE + C_SPARE];
-bool RLSS[R_SPARE-1];
+bool RLSS[R_SPARE - 1];
 
 // Signal Validity Checker variables
 int pivot_block[PCAM_SIZE];
@@ -34,7 +34,7 @@ bool nonpivot_cover_info[NPCAM_SIZE];
 // store fault to CAM structure
 static void store_CAM() {
 	int pcam_ptr = 0;
-	
+
 	for (int k = 0; k < BNK; k++) {
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
@@ -99,7 +99,7 @@ void BIRA() {
 	for (int i = 0; i < testCnt; i++) {
 		singal_generate();
 		//if (signal_valid() && DSSS[1] && DSSS[2] && DSSS[6]) {
-		if(signal_valid()) {
+		if (signal_valid()) {
 			spare_allocation();
 			show_info();
 			if (redundant_analyzer.show_final_result())
