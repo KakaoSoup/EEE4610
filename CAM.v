@@ -20,29 +20,33 @@ parameter PCAM = 8;
 parameter NPCAM = 30;
 
 reg find;                                  // if faults is npcam, set 1
+
 // pcam
-reg pcam_enable [0:PCAM-1];
-reg [9:0] pcam_row_addr [0:PCAM-1];
-reg [9:0] pcam_col_addr [0:PCAM-1];
-reg [1:0] pcam_bnk_addr [0:PCAM-1];
-reg [2:0] pcam_must_flag [0:PCAM-1];
+reg [PCAM-1:0]pcam_enable;
+reg [PCAM-1:0][9:0] pcam_row_addr;
+reg [PCAM-1:0][9:0] pcam_col_addr;
+reg [PCAM-1:0][1:0] pcam_bnk_addr;
+reg [PCAM-1:0][2:0] pcam_must_flag;
+
 // npcam
-reg npcam_enable [0:NPCAM-1];
-reg [2:0] npcam_ptr [0:NPCAM-1];
-reg npcam_dscrpt [0:NPCAM-1];
-reg [9:0] npcam_addr [0:NPCAM-1];
-reg [1:0] npcam_bnk_addr [0:NPCAM-1];
+reg [NPCAM-1:0]npcam_enable;
+reg [NPCAM-1:0][2:0] npcam_ptr;
+reg [NPCAM-1:0]npcam_dscrpt;
+reg [NPCAM-1:0][9:0] npcam_addr;
+reg [NPCAM-1:0][1:0] npcam_bnk_addr;
+
 // XX_XX_XX : row, col, adj
 reg [5:0] cnt[0:PCAM-1];                    
 
+assign pivot_fault_addr = { pcam_enable, pcam_row_addr, pcam_col_addr, pcam_bnk_addr, pcam_must_flag };
+assign nonpivot_fault_addr = { npcam_enable, npcam_ptr, npcam_dscrpt, npcam_addr, npcam_bnk_addr };
 
-
+/*
 // Combinational logic for pivot_fault_addr
 genvar i;
 generate
     for (i = 0; i < PCAM; i = i + 1) begin : assign_pivot_fault
-        assign pivot_fault_addr[i] = { pcam_enable[i], pcam_row_addr[i], pcam_col_addr[i],
-                                       pcam_bnk_addr[i], pcam_must_flag[i] };
+        assign pivot_fault_addr[i] = { pcam_enable[i], pcam_row_addr[i], pcam_col_addr[i], pcam_bnk_addr[i], pcam_must_flag[i] };
     end
 endgenerate
 
@@ -50,10 +54,10 @@ endgenerate
 genvar j;
 generate
     for (j = 0; j < NPCAM; j = j + 1) begin : assign_nonpivot_fault
-        assign nonpivot_fault_addr[j] = { npcam_enable[j], npcam_ptr[j], npcam_dscrpt[j],
-                                          npcam_addr[j], npcam_bnk_addr[j] };
+        assign nonpivot_fault_addr[j] = { npcam_enable[j], npcam_ptr[j], npcam_dscrpt[j], npcam_addr[j], npcam_bnk_addr[j] };
     end
 endgenerate
+*/
 
 always @ (posedge clk) begin : CAM_alloct
     integer p_idx;
