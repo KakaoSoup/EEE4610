@@ -104,6 +104,19 @@ spare_allocation_analyzer spare_allcot (
 );
 
 
+RedundantAnalyzer redudnat_analyzer (
+	.unused_spare(),
+	.uncover_must_pivot(),
+	.signal_valid(),
+	.uncover_nonpivot_addr(),
+	.cover_pivot_addr(),
+	.nonpivot_cover_result(),
+	.uncover_must_addr(),
+	
+	.final_result(),
+	.final_cover_addr()
+);
+
 //////////////////////////////////////////////////////////
 endmodule
 

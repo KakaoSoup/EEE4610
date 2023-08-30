@@ -37,7 +37,7 @@ memory mem(
     .data_i(data_w),
     // output
     .data_o(data_r)
-	);
+);
 
 mbist_top mbist(
     //input
@@ -59,7 +59,7 @@ mbist_top mbist(
 	.fault_col(fault_col),
 	.fault_col_flag(fault_col_flag),
 	.fault_bank(fault_bank)
-    );	
+);	
 	
 bira_top bira(
     //input
@@ -76,7 +76,7 @@ bira_top bira(
     .early_term(early_term),
     .repair(repair),
     .solution(solution)
-    );		  
+);		  
 
 
 

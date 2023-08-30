@@ -35,6 +35,8 @@ module spare_allocation_analyzer (
 parameter PCAM = 8;
 parameter NPCAM = 30;
 
+reg clss = 4'b0000;
+
 wire [9:0] RRx [0:3];
 wire [9:0] RCx [0:3];
 wire [PCAM-1:0][9:0] pivot_row;
@@ -385,7 +387,7 @@ NP_comp col_comp_block1 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[0])
 );
 
@@ -395,7 +397,7 @@ NP_comp col_comp_block2 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[1])
 );
 
@@ -405,7 +407,7 @@ NP_comp col_comp_block3 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[2])
 );
 
@@ -415,7 +417,7 @@ NP_comp col_comp_block4 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[3])
 );
 
@@ -425,7 +427,7 @@ NP_comp col_comp_block5 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[4])
 );
 
@@ -435,7 +437,7 @@ NP_comp col_comp_block6 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[5])
 );
 
@@ -445,7 +447,7 @@ NP_comp col_comp_block7 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[6])
 );
 
@@ -455,7 +457,7 @@ NP_comp col_comp_block8 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[7])
 );
 
@@ -465,7 +467,7 @@ NP_comp col_comp_block9 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[8])
 );
 
@@ -475,7 +477,7 @@ NP_comp col_comp_block10 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[9])
 );
 
@@ -485,7 +487,7 @@ NP_comp col_comp_block11 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[10])
 );
 
@@ -495,7 +497,7 @@ NP_comp col_comp_block12 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[11])
 );
 
@@ -505,7 +507,7 @@ NP_comp col_comp_block13 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[12])
 );
 
@@ -515,7 +517,7 @@ NP_comp col_comp_block14 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[13])
 );
 
@@ -525,7 +527,7 @@ NP_comp col_comp_block15 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[14])
 );
 
@@ -535,7 +537,7 @@ NP_comp col_comp_block16 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[15])
 );
 
@@ -545,7 +547,7 @@ NP_comp col_comp_block17 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[16])
 );
 
@@ -555,7 +557,7 @@ NP_comp col_comp_block18 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[17])
 );
 
@@ -565,7 +567,7 @@ NP_comp col_comp_block19 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[18])
 );
 
@@ -575,7 +577,7 @@ NP_comp col_comp_block20 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[19])
 );
 
@@ -585,7 +587,7 @@ NP_comp col_comp_block21 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[20])
 );
 
@@ -595,7 +597,7 @@ NP_comp col_comp_block22 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[21])
 );
 
@@ -605,7 +607,7 @@ NP_comp col_comp_block23 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[22])
 );
 
@@ -615,7 +617,7 @@ NP_comp col_comp_block24 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[23])
 );
 
@@ -625,7 +627,7 @@ NP_comp col_comp_block25 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[24])
 );
 
@@ -635,7 +637,7 @@ NP_comp col_comp_block26 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[25])
 );
 
@@ -645,7 +647,7 @@ NP_comp col_comp_block27 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[26])
 );
 
@@ -655,7 +657,7 @@ NP_comp col_comp_block28 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[27])
 );
 
@@ -665,7 +667,7 @@ NP_comp col_comp_block29 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[28])
 );
 
@@ -675,7 +677,7 @@ NP_comp col_comp_block30 (
 	.RCx2(RCx[1]),
 	.RCx3(RCx[2]),
 	.RCx4(RCx[3]),
-	.RLSS(rlss),
+	.RLSS(clss),
 	.comp(nonpivot_cover_result2[29])
 );
 
