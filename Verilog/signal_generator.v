@@ -74,7 +74,7 @@ always @ (posedge clk) begin
                         k <= i - 3; 
                         p <= i - 4;
                     end else begin
-                        gen_sig <= 0; // ·çÇÁ Á¾·á
+                        gen_sig <= 0; // Â·Ã§Ã‡Ã ÃÂ¾Â·Ã¡
                     end                
                 end
             end
@@ -105,7 +105,7 @@ always @ (posedge clk) begin
                             k <= i - 3; 
                             p <= i - 4;
                         end else begin
-                            gen_sig <= 0; // ·çÇÁ Á¾·á
+                            gen_sig <= 0; // Â·Ã§Ã‡Ã ÃÂ¾Â·Ã¡
                         end
                     end
                 end
