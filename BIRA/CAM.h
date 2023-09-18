@@ -23,6 +23,7 @@ extern void store_CAM();
 	1 + 10 + 10 + 2 + 1 + 1 + 1 + 1 = 27 bits
 */
 struct Pcam {
+	bool ren;
 	bool en;
 	int row_addr;
 	int col_addr;
@@ -30,6 +31,7 @@ struct Pcam {
 	int must_repair;
 
 	Pcam() {
+		ren = false;
 		en = false;
 		row_addr = 0;
 		col_addr = 0;
@@ -250,10 +252,11 @@ public:
 	// show PCAMs
 	void showPcam() {
 		int idx = 0;
-		cout << "PCAM(en/row/col/bnk/must) : " << endl;
+		cout << "PCAM(ren/en/row/col/bnk/must) : " << endl;
 		for (int i = 0; i < this->pcam_cnt; i++) {
-			if (pcam[i].en) {
+			if (pcam[i].en || pcam[i].ren) {
 				cout << '#' << idx++ << '\t';
+				cout << pcam[i].ren << '_';
 				cout << pcam[i].en << '_';
 				cout << pcam[i].row_addr << '_';
 				cout << pcam[i].col_addr << '_';
